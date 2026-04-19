@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Secure Banking</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container { width: 800px; max-width: 90%; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
+        .list-box { background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; height: 300px; overflow-y: auto; }
+        .item-row { display: flex; justify-content: space-between; border-bottom: 1px solid #334155; padding: 10px 0; font-size: 14px; }
+        .block-btn { background: #ef4444; padding: 5px 10px; font-size: 12px; margin-top: 0; width: auto; }
+        .unblock-btn { background: #10b981; padding: 5px 10px; font-size: 12px; margin-top: 0; width: auto; }
+        .sort-btn { background: #f59e0b; width: auto; padding: 5px 15px; font-size: 12px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container admin-container">
+        <div class="header">
+            <h2>🛡️ Admin Control Panel</h2>
+            <p>System Monitoring & Access Control</p>
+        </div>
+
+        <div class="grid-layout">
+            <div class="form-box">
+                <h4 style="margin-bottom: 10px;">Registered Users</h4>
+                <div class="list-box" id="usersList">
+                    <p style='color: #94a3b8; text-align: center;'>Loading users...</p>
+                </div>
+            </div>
+
+            <div class="form-box">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin-bottom: 10px;">All Transactions</h4>
+                    <button class="sort-btn" onclick="sortTransactions()">Sort by Amount</button>
+                </div>
+                <div class="list-box" id="transactionsList">
+                    <p style='color: #94a3b8; text-align: center;'>Loading transactions...</p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="logout()" class="logout-btn" style="margin-top: 20px; width: 200px;">Logout</button>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

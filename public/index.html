@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Banking System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>🛡️ Secure Banking</h2>
+            <p>Enterprise Grade Security with DSA</p>
+        </div>
+
+        <div class="auth-section" id="authSection">
+            
+            <div class="form-box" id="loginForm">
+                <h3>Login to Portal</h3>
+                <input type="email" id="loginEmail" placeholder="Email Address" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button onclick="login()">Secure Login</button>
+                <p class="switch-text">New to the portal? <span onclick="toggleForm()">Register Here</span></p>
+            </div>
+
+            <div class="form-box" id="registerForm" style="display: none;">
+                <h3>Create New Account</h3>
+                <input type="text" id="regName" placeholder="Full Name" required>
+                <input type="email" id="regEmail" placeholder="Email Address" required>
+                <input type="password" id="regPassword" placeholder="Password" required>
+                <button onclick="register()">Create Account</button>
+                <p class="switch-text">Already have an account? <span onclick="toggleForm()">Login Here</span></p>
+            </div>
+
+        </div>
+
+        <div class="dashboard-section" id="dashboardSection" style="display: none;">
+            <h3>Welcome, <span id="userName">User</span>!</h3>
+            
+            <div class="balance-card">
+                <p>Available Balance</p>
+                <h2 id="userBalance">₹0</h2>
+            </div>
+
+            <div class="form-box">
+                <h4 style="margin-bottom: 10px;">Transfer Funds</h4>
+                <input type="email" id="transferEmail" placeholder="Receiver's Email" required>
+                <input type="number" id="transferAmount" placeholder="Amount (₹)" required>
+                <button onclick="transferFunds()" style="background: #10b981;">Send Money</button>
+            </div>
+
+            <div class="form-box" style="margin-top: 20px;">
+                <h4 style="margin-bottom: 10px;">Recent Transactions</h4>
+                <button onclick="loadHistory()" style="background: #6366f1; margin-bottom: 15px;">Refresh History</button>
+                <div id="historyList" style="text-align: left; font-size: 14px; max-height: 150px; overflow-y: auto;">
+                    </div>
+            </div>
+
+            <button onclick="logout()" class="logout-btn" style="margin-top: 20px;">Logout</button>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
