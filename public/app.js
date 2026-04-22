@@ -1,156 +1,134 @@
-// Form Toggle Logic
-function toggleForm() {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    
-    if (loginForm.style.display === 'none') {
-        loginForm.style.display = 'block';
-        registerForm.style.display = 'none';
-    } else {
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
+document.addEventListener("DOMContentLoaded", () => {
+    // UI Elements
+    const depositBtn = document.querySelector(".deposit");
+    const withdrawBtn = document.querySelector(".withdraw");
+    const sendBtn = document.getElementById("sendBtn");
+    const otpModal = document.getElementById("otpModal");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+    const cancelOtpBtn = document.getElementById("cancelOtpBtn");
+    const otpInput = document.getElementById("otpInput");
+    const balanceAmount = document.getElementById("balanceAmount");
+    const transferMessage = document.getElementById("transferMessage");
+    const transactionList = document.getElementById("transactionList");
+
+    // Variables to hold state during OTP verification
+    let currentAction = ""; 
+    let currentAmount = 0;
+    let balance = 15000; // Starting Dummy Balance
+
+    // Initialize Balance
+    updateBalance();
+
+    function updateBalance() {
+        balanceAmount.innerText = "₹" + balance.toLocaleString();
     }
-}
 
-// 1. Register Logic
-async function register() {
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
+    // --- OTP MODAL LOGIC ---
+    function showOTP(action, amount) {
+        currentAction = action;
+        currentAmount = parseInt(amount);
+        otpModal.style.display = "flex"; // Show Modal
+        otpInput.value = "";
+        transferMessage.innerText = "";
+    }
 
-    const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+    cancelOtpBtn.addEventListener("click", () => {
+        otpModal.style.display = "none";
     });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert("Account created successfully! Please proceed to login.");
-        toggleForm();
-    } else {
-        alert("Error: " + data.message);
-    }
-}
-
-// 2. Login Logic
-async function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+    // --- BUTTON CLICKS ---
+    depositBtn.addEventListener("click", () => {
+        let amt = prompt("Enter amount to deposit (₹):");
+        if(amt && !isNaN(amt) && amt > 0) showOTP("deposit", amt);
     });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert("Login Successful!");
+    withdrawBtn.addEventListener("click", () => {
+        let amt = prompt("Enter amount to withdraw (₹):");
+        if(amt && !isNaN(amt) && amt > 0) {
+            if(amt > balance) alert("Insufficient Balance!");
+            else showOTP("withdraw", amt);
+        }
+    });
+
+    sendBtn.addEventListener("click", () => {
+        const email = document.getElementById("receiverEmail").value;
+        const amt = parseInt(document.getElementById("transferAmount").value);
         
-        // Token aur User detail local storage me save kar rahe hain
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        showDashboard();
-    } else {
-        alert("Login Failed: " + data.message);
-    }
-}
-
-// 3. Show Dashboard Logic
-function showDashboard() {
-    document.getElementById('authSection').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
-
-    const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userName').innerText = user.name;
-    document.getElementById('userBalance').innerText = '₹' + user.balance;
-}
-
-// 4. Logout Logic
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.reload();
-}
-
-// ==========================================
-// 5. Fund Transfer Logic (Queue API)
-// ==========================================
-async function transferFunds() {
-    const receiverEmail = document.getElementById('transferEmail').value;
-    const amount = document.getElementById('transferAmount').value;
-    const token = localStorage.getItem('token'); 
-
-    const response = await fetch('/api/transactions/transfer', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token 
-        },
-        body: JSON.stringify({ receiverEmail, amount: Number(amount) })
+        if(!email || !amt || amt <= 0) {
+            transferMessage.innerText = "Please enter valid email and amount.";
+            transferMessage.style.color = "#ef4444";
+            return;
+        }
+        if(amt > balance) {
+            transferMessage.innerText = "Insufficient balance for transfer!";
+            transferMessage.style.color = "#ef4444";
+            return;
+        }
+        showOTP("transfer", amt);
     });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert(data.message);
-        // Balance update karne ke liye local storage update kar rahe hain
-        let user = JSON.parse(localStorage.getItem('user'));
-        user.balance -= Number(amount);
-        localStorage.setItem('user', JSON.stringify(user));
-        document.getElementById('userBalance').innerText = '₹' + user.balance;
-        
-        // Form clear karna
-        document.getElementById('transferEmail').value = '';
-        document.getElementById('transferAmount').value = '';
-        loadHistory(); // Naya transaction hone pe history refresh karo
-    } else {
-        alert("Transfer Failed: " + data.message);
-    }
-}
-
-// ==========================================
-// 6. Transaction History Logic (Stack API)
-// ==========================================
-async function loadHistory() {
-    const token = localStorage.getItem('token');
-    const historyList = document.getElementById('historyList');
-    historyList.innerHTML = "Loading...";
-
-    const response = await fetch('/api/transactions/history', {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-        historyList.innerHTML = '';
-        if (data.history.length === 0) {
-            historyList.innerHTML = "<p style='color: #94a3b8;'>No recent transactions found.</p>";
+    // --- CORE LOGIC (QUEUE & STACK SIMULATION) ---
+    verifyOtpBtn.addEventListener("click", () => {
+        if(otpInput.value.length !== 6) {
+            alert("Security Alert: Please enter a valid 6-digit OTP.");
             return;
         }
 
-        // Stack se aayi hui latest history ko list me dikhana
-        data.history.forEach(tx => {
-            const txType = tx.type.toUpperCase();
-            const color = txType === 'TRANSFER' ? '#ef4444' : '#10b981'; 
-            
-            historyList.innerHTML += `
-                <div style="border-bottom: 1px solid #334155; padding: 8px 0; display: flex; justify-content: space-between;">
-                    <span>${txType}</span>
-                    <strong style="color: ${color};">₹${tx.amount}</strong>
-                </div>
-            `;
-        });
-    } else {
-        historyList.innerHTML = "<p style='color: red;'>Error loading history.</p>";
-    }
-}
+        // Simulate QUEUE Processing (DSA Concept)
+        verifyOtpBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing Queue...";
+        verifyOtpBtn.style.background = "#f59e0b"; // Orange Warning color
 
-// Page load hone par check karo agar user pehle se login hai
-window.onload = () => {
-    if (localStorage.getItem('token')) {
-        showDashboard();
+        // Artificial delay to show system processing
+        setTimeout(() => {
+            // Deduct or Add Balance
+            if(currentAction === "deposit") balance += currentAmount;
+            else balance -= currentAmount; // For withdraw and transfer
+
+            updateBalance();
+            addTransactionToStack(currentAction, currentAmount);
+
+            // Reset UI
+            otpModal.style.display = "none";
+            verifyOtpBtn.innerText = "Verify & Proceed";
+            verifyOtpBtn.style.background = "#10b981";
+
+            if(currentAction === "transfer") {
+                transferMessage.innerHTML = "<i class='fa-solid fa-check-circle'></i> Transfer successful!";
+                transferMessage.style.color = "#10b981";
+                document.getElementById("receiverEmail").value = "";
+                document.getElementById("transferAmount").value = "";
+            }
+
+        }, 1800); // 1.8 seconds delay
+    });
+
+    // --- STACK LOGIC (LIFO) ---
+    function addTransactionToStack(type, amt) {
+        const row = document.createElement("tr");
+        const date = new Date().toLocaleString();
+        let email = (type === "transfer") ? document.getElementById("receiverEmail").value : "Self (Account)";
+
+        let typeHtml = "";
+        if(type === "deposit") typeHtml = "<span style='color:#10b981; font-weight:bold;'>Deposit</span>";
+        if(type === "withdraw") typeHtml = "<span style='color:#ef4444; font-weight:bold;'>Withdraw</span>";
+        if(type === "transfer") typeHtml = "<span style='color:#3b82f6; font-weight:bold;'>Transfer</span>";
+
+        row.innerHTML = `
+            <td>${typeHtml}</td>
+            <td>${email}</td>
+            <td style="font-family:monospace; font-size:16px;">₹${amt.toLocaleString()}</td>
+            <td style="color:#94a3b8; font-size:12px;">${date}</td>
+        `;
+
+        // LIFO: Insert at the top of the table
+        transactionList.insertBefore(row, transactionList.firstChild);
     }
-};
+
+    // --- LOGOUT ---
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        let confirmLogout = confirm("Are you sure you want to securely logout?");
+        if(confirmLogout) {
+            document.body.innerHTML = "<h1 style='color:#10b981; text-align:center; margin-top:20vh;'>Logged out securely. Session destroyed.</h1>";
+        }
+    });
+});
