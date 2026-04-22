@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Banking | Enterprise Core</title>
+    <title>SecureBank | Enterprise Core Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,18 +17,23 @@
             </div>
             <ul class="nav-links">
                 <li class="active"><i class="fa-solid fa-border-all"></i> Dashboard</li>
-                <li><i class="fa-solid fa-money-bill-transfer"></i> Transfer (Queue)</li>
+                <li><i class="fa-solid fa-money-bill-transfer"></i> Fund Transfer (Queue)</li>
+                <li><i class="fa-solid fa-building-columns"></i> Deposit & Withdraw</li>
                 <li><i class="fa-solid fa-clock-rotate-left"></i> History (Stack)</li>
-                <li class="admin-link"><i class="fa-solid fa-user-tie"></i> Admin Panel</li>
+                <li><i class="fa-solid fa-user-shield"></i> Profile & Password</li>
+                <li class="admin-link"><i class="fa-solid fa-server"></i> Admin Panel</li>
             </ul>
+            <div class="sidebar-footer">
+                <p>Protected by <strong>bcrypt & JWT</strong></p>
+            </div>
             <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-power-off"></i> Secure Logout</button>
         </aside>
 
         <main class="main-content">
             <header class="top-header">
                 <div class="welcome-text">
-                    <h1>System Overview</h1>
-                    <p>Live Node.js & MongoDB Server Status: <span class="status-green">Connected</span></p>
+                    <h1>Banking Overview</h1>
+                    <p>Live Node.js & MongoDB Server Status: <span class="status-green"><i class="fa-solid fa-circle-check"></i> Connected</span></p>
                 </div>
                 <div class="user-profile">
                     <i class="fa-solid fa-user-circle"></i>
@@ -40,11 +45,19 @@
                 <div class="card balance-card">
                     <h3>Available Balance</h3>
                     <h2 id="balanceAmount">₹0.00</h2>
-                    <p class="crypto-hash">Secure Hash: 0x8A4b...9f2C</p>
+                    <p class="crypto-hash">Secure Hash: <span id="hashDisplay">0x8A4b...9f2C</span></p>
+                </div>
+
+                <div class="card quick-actions-card">
+                    <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn deposit"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+                        <button class="action-btn withdraw"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+                    </div>
                 </div>
 
                 <div class="card action-card">
-                    <h3><i class="fa-solid fa-bolt"></i> Quick Transfer (Queue Processing)</h3>
+                    <h3><i class="fa-solid fa-money-bill-wave"></i> Secure Transfer (Queue)</h3>
                     <div class="form-group">
                         <label>Receiver's Secure Email</label>
                         <input type="email" id="receiverEmail" placeholder="e.g. client@bank.com">
@@ -53,22 +66,20 @@
                         <label>Amount (₹)</label>
                         <input type="number" id="transferAmount" placeholder="0.00">
                     </div>
-                    <button id="sendBtn" class="primary-btn">Initialize Transfer</button>
+                    <button id="sendBtn" class="primary-btn"><i class="fa-solid fa-paper-plane"></i> Initialize Transfer</button>
                     <p id="transferMessage" class="msg"></p>
                 </div>
 
                 <div class="card dsa-card">
-                    <h3><i class="fa-solid fa-network-wired"></i> Live DSA Visualizer</h3>
+                    <h3><i class="fa-solid fa-network-wired"></i> Live DSA Monitor</h3>
                     <div class="dsa-stats">
                         <div class="stat-box">
-                            <h4>Current Queue</h4>
-                            <span class="pulse-text">Active</span>
-                            <p>Processing Transfers</p>
+                            <h4>Queue status</h4>
+                            <span class="pulse-text">FIFO Active</span>
                         </div>
                         <div class="stat-box">
                             <h4>History Stack</h4>
-                            <span>LIFO</span>
-                            <p>Last In, First Out</p>
+                            <span>LIFO Ready</span>
                         </div>
                     </div>
                 </div>
@@ -96,10 +107,22 @@
             </div>
 
             <footer class="system-footer">
-                <p>System Architected & Secured by <span class="developer-name">Md Aasif Raza</span> | DBUU</p>
+                <p>System Architected & Secured by <span class="developer-name">Md Aasif Raza</span> | DBUU BCA Data Science</p>
             </footer>
         </main>
     </div>
+
+    <div id="otpModal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fa-solid fa-shield-cat modal-icon"></i>
+            <h2>Security Verification</h2>
+            <p>Enter the 6-digit OTP sent to your registered email.</p>
+            <input type="text" id="otpInput" maxlength="6" placeholder="• • • • • •">
+            <button id="verifyOtpBtn" class="primary-btn">Verify & Proceed</button>
+            <button id="cancelOtpBtn" class="secondary-btn" style="width: 100%; margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

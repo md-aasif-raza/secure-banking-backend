@@ -76,3 +76,18 @@ tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
 .developer-name { color: #10b981; font-weight: bold; font-family: monospace; font-size: 15px; }
 
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+/* Quick Actions & Extra Elements */
+.bento-grid { grid-template-columns: 1fr 1fr 1.5fr 1fr; } /* Added space for new cards */
+.action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.action-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.action-btn.deposit { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.action-btn.withdraw { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+.action-btn:hover { transform: translateY(-2px); }
+
+/* OTP Modal Styling */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
+.modal-content { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #10b981; width: 350px; text-align: center; }
+.modal-icon { font-size: 40px; color: #10b981; margin-bottom: 15px; }
+.modal-content input { width: 100%; padding: 15px; margin: 15px 0; text-align: center; font-size: 24px; letter-spacing: 5px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; outline: none; }
+.modal-content input:focus { border-color: #10b981; }
+.sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid #334155; font-size: 12px; color: #64748b; text-align: center; }
