@@ -3,123 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureBank | Enterprise Core Dashboard</title>
+    <title>SecureBank | High-Tech Core</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard-layout">
-        <aside class="sidebar">
+        <aside class="sidebar slide-up" style="animation-delay: 0.1s;">
             <div class="brand">
-                <i class="fa-solid fa-shield-halved"></i>
+                <i class="fa-solid fa-fingerprint"></i>
                 <h2>SecureBank</h2>
-                <span class="badge">Enterprise V2.0</span>
             </div>
             <ul class="nav-links">
-                <li class="active"><i class="fa-solid fa-border-all"></i> Dashboard</li>
-                <li><i class="fa-solid fa-money-bill-transfer"></i> Fund Transfer (Queue)</li>
-                <li><i class="fa-solid fa-building-columns"></i> Deposit & Withdraw</li>
-                <li><i class="fa-solid fa-clock-rotate-left"></i> History (Stack)</li>
-                <li><i class="fa-solid fa-user-shield"></i> Profile & Password</li>
-                <li class="admin-link"><i class="fa-solid fa-server"></i> Admin Panel</li>
+                <li class="active"><i class="fa-solid fa-border-all"></i> Overview</li>
+                <li><i class="fa-solid fa-money-bill-transfer"></i> Transfers</li>
+                <li><i class="fa-solid fa-chart-pie"></i> Analytics</li>
+                <li><i class="fa-solid fa-shield-halved"></i> Security Logs</li>
             </ul>
-            <div class="sidebar-footer">
-                <p>Protected by <strong>bcrypt & JWT</strong></p>
-            </div>
-            <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-power-off"></i> Secure Logout</button>
+            <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-power-off"></i> System Exit</button>
         </aside>
 
         <main class="main-content">
-            <header class="top-header">
-                <div class="welcome-text">
-                    <h1>Banking Overview</h1>
-                    <p>Live Node.js & MongoDB Server Status: <span class="status-green"><i class="fa-solid fa-circle-check"></i> Connected</span></p>
+            <header class="top-header slide-up" style="animation-delay: 0.2s;">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search transactions, accounts...">
                 </div>
-                <div class="user-profile">
-                    <i class="fa-solid fa-user-circle"></i>
-                    <span id="welcomeMessage">Loading User...</span>
+                <div class="user-controls">
+                    <div class="status-badge"><i class="fa-solid fa-circle-check"></i> Encrypted Session</div>
+                    <div class="profile-pic">AR</div>
                 </div>
             </header>
 
             <div class="bento-grid">
-                <div class="card balance-card">
-                    <h3>Available Balance</h3>
-                    <h2 id="balanceAmount">₹0.00</h2>
-                    <p class="crypto-hash">Secure Hash: <span id="hashDisplay">0x8A4b...9f2C</span></p>
-                </div>
-
-                <div class="card quick-actions-card">
-                    <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
-                    <div class="action-buttons">
-                        <button class="action-btn deposit"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
-                        <button class="action-btn withdraw"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+                <div class="card dark-card slide-up" style="animation-delay: 0.3s;">
+                    <div class="card-content">
+                        <h3><i class="fa-solid fa-robot"></i> Security Agent</h3>
+                        <p>Real-time threat monitoring is active. JWT & OTP validation protocols engaged.</p>
+                        <button class="arrow-btn"><i class="fa-solid fa-arrow-right"></i> View Logs</button>
                     </div>
                 </div>
 
-                <div class="card action-card">
-                    <h3><i class="fa-solid fa-money-bill-wave"></i> Secure Transfer (Queue)</h3>
-                    <div class="form-group">
-                        <label>Receiver's Secure Email</label>
-                        <input type="email" id="receiverEmail" placeholder="e.g. client@bank.com">
+                <div class="card chart-card slide-up" style="animation-delay: 0.4s;">
+                    <div class="card-header">
+                        <h3>Cash Flow (Weekly)</h3>
+                        <select><option>This Week</option></select>
                     </div>
-                    <div class="form-group">
-                        <label>Amount (₹)</label>
+                    <div class="chart-container">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card action-card slide-up" style="animation-delay: 0.5s;">
+                    <h3>Initialize Transfer</h3>
+                    <div class="input-group">
+                        <input type="email" id="receiverEmail" placeholder="Receiver's Email">
+                    </div>
+                    <div class="input-group amount-group">
+                        <span class="currency">₹</span>
                         <input type="number" id="transferAmount" placeholder="0.00">
                     </div>
-                    <button id="sendBtn" class="primary-btn"><i class="fa-solid fa-paper-plane"></i> Initialize Transfer</button>
-                    <p id="transferMessage" class="msg"></p>
+                    <button id="sendBtn" class="premium-btn">Send Securely</button>
+                    <p id="transferMessage"></p>
                 </div>
 
-                <div class="card dsa-card">
-                    <h3><i class="fa-solid fa-network-wired"></i> Live DSA Monitor</h3>
-                    <div class="dsa-stats">
-                        <div class="stat-box">
-                            <h4>Queue status</h4>
-                            <span class="pulse-text">FIFO Active</span>
-                        </div>
-                        <div class="stat-box">
-                            <h4>History Stack</h4>
-                            <span>LIFO Ready</span>
+                <div class="card list-card slide-up" style="animation-delay: 0.6s;">
+                    <div class="card-header">
+                        <h3>Recent Transactions</h3>
+                    </div>
+                    <ul class="transaction-list" id="transactionList">
+                        </ul>
+                </div>
+
+                <div class="card chart-card slide-up" style="animation-delay: 0.7s;">
+                    <h3>Account Activity</h3>
+                    <div class="donut-container">
+                        <canvas id="activityChart"></canvas>
+                        <div class="donut-center">
+                            <h2 id="balanceAmount">₹15,000</h2>
+                            <span>Available</span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="table-section">
-                <div class="table-header">
-                    <h3><i class="fa-solid fa-list-check"></i> Recent Transactions (Stack)</h3>
-                    <button id="refreshBtn" class="secondary-btn"><i class="fa-solid fa-rotate"></i> Sync Data</button>
-                </div>
-                <div class="table-container">
-                    <table id="transactionTable">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Email</th>
-                                <th>Amount</th>
-                                <th>Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionList">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <footer class="system-footer">
-                <p>System Architected & Secured by <span class="developer-name">Md Aasif Raza</span> | DBUU BCA Data Science</p>
-            </footer>
         </main>
     </div>
 
     <div id="otpModal" class="modal-overlay">
-        <div class="modal-content">
-            <i class="fa-solid fa-shield-cat modal-icon"></i>
-            <h2>Security Verification</h2>
-            <p>Enter the 6-digit OTP sent to your registered email.</p>
-            <input type="text" id="otpInput" maxlength="6" placeholder="• • • • • •">
-            <button id="verifyOtpBtn" class="primary-btn">Verify & Proceed</button>
-            <button id="cancelOtpBtn" class="secondary-btn" style="width: 100%; margin-top: 10px;">Cancel</button>
+        <div class="modal-content glass-effect">
+            <i class="fa-solid fa-lock modal-icon"></i>
+            <h2>Authentication Required</h2>
+            <p>Enter your 6-digit secure code.</p>
+            <input type="text" id="otpInput" maxlength="6" placeholder="------">
+            <button id="verifyOtpBtn" class="premium-btn">Verify Transaction</button>
+            <button id="cancelOtpBtn" class="text-btn">Cancel</button>
         </div>
     </div>
 

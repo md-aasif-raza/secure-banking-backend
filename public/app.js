@@ -1,134 +1,106 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // UI Elements
-    const depositBtn = document.querySelector(".deposit");
-    const withdrawBtn = document.querySelector(".withdraw");
+    // --- INITIALIZE CHARTS (Making it look real) ---
+    const ctxBar = document.getElementById('cashFlowChart').getContext('2d');
+    const ctxDonut = document.getElementById('activityChart').getContext('2d');
+
+    // Premium Bar Chart with Gradients
+    let gradientBar = ctxBar.createLinearGradient(0, 0, 0, 400);
+    gradientBar.addColorStop(0, '#4318FF');
+    gradientBar.addColorStop(1, 'rgba(67, 24, 255, 0.2)');
+
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Transfers',
+                data: [1200, 1900, 800, 2500, 1500, 3200, 1000],
+                backgroundColor: gradientBar,
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { display: false, grid: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
+
+    // Premium Donut Chart
+    new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+            labels: ['Deposits', 'Transfers', 'Withdrawals'],
+            datasets: [{
+                data: [55, 30, 15],
+                backgroundColor: ['#4318FF', '#05cd99', '#FFCE20'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // --- CORE LOGIC (OTP & Transactions) ---
     const sendBtn = document.getElementById("sendBtn");
     const otpModal = document.getElementById("otpModal");
     const verifyOtpBtn = document.getElementById("verifyOtpBtn");
     const cancelOtpBtn = document.getElementById("cancelOtpBtn");
-    const otpInput = document.getElementById("otpInput");
-    const balanceAmount = document.getElementById("balanceAmount");
     const transferMessage = document.getElementById("transferMessage");
     const transactionList = document.getElementById("transactionList");
+    let balance = 15000;
 
-    // Variables to hold state during OTP verification
-    let currentAction = ""; 
-    let currentAmount = 0;
-    let balance = 15000; // Starting Dummy Balance
-
-    // Initialize Balance
-    updateBalance();
-
-    function updateBalance() {
-        balanceAmount.innerText = "₹" + balance.toLocaleString();
-    }
-
-    // --- OTP MODAL LOGIC ---
-    function showOTP(action, amount) {
-        currentAction = action;
-        currentAmount = parseInt(amount);
-        otpModal.style.display = "flex"; // Show Modal
-        otpInput.value = "";
-        transferMessage.innerText = "";
-    }
+    sendBtn.addEventListener("click", () => {
+        const email = document.getElementById("receiverEmail").value;
+        const amt = parseInt(document.getElementById("transferAmount").value);
+        if(!email || !amt || amt <= 0) return;
+        otpModal.style.display = "flex";
+        document.getElementById("otpInput").value = "";
+    });
 
     cancelOtpBtn.addEventListener("click", () => {
         otpModal.style.display = "none";
     });
 
-    // --- BUTTON CLICKS ---
-    depositBtn.addEventListener("click", () => {
-        let amt = prompt("Enter amount to deposit (₹):");
-        if(amt && !isNaN(amt) && amt > 0) showOTP("deposit", amt);
-    });
-
-    withdrawBtn.addEventListener("click", () => {
-        let amt = prompt("Enter amount to withdraw (₹):");
-        if(amt && !isNaN(amt) && amt > 0) {
-            if(amt > balance) alert("Insufficient Balance!");
-            else showOTP("withdraw", amt);
-        }
-    });
-
-    sendBtn.addEventListener("click", () => {
-        const email = document.getElementById("receiverEmail").value;
-        const amt = parseInt(document.getElementById("transferAmount").value);
-        
-        if(!email || !amt || amt <= 0) {
-            transferMessage.innerText = "Please enter valid email and amount.";
-            transferMessage.style.color = "#ef4444";
-            return;
-        }
-        if(amt > balance) {
-            transferMessage.innerText = "Insufficient balance for transfer!";
-            transferMessage.style.color = "#ef4444";
-            return;
-        }
-        showOTP("transfer", amt);
-    });
-
-    // --- CORE LOGIC (QUEUE & STACK SIMULATION) ---
     verifyOtpBtn.addEventListener("click", () => {
-        if(otpInput.value.length !== 6) {
-            alert("Security Alert: Please enter a valid 6-digit OTP.");
-            return;
-        }
-
-        // Simulate QUEUE Processing (DSA Concept)
-        verifyOtpBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing Queue...";
-        verifyOtpBtn.style.background = "#f59e0b"; // Orange Warning color
-
-        // Artificial delay to show system processing
+        const amt = parseInt(document.getElementById("transferAmount").value);
+        verifyOtpBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing...";
+        
         setTimeout(() => {
-            // Deduct or Add Balance
-            if(currentAction === "deposit") balance += currentAmount;
-            else balance -= currentAmount; // For withdraw and transfer
+            balance -= amt;
+            document.getElementById("balanceAmount").innerText = "₹" + balance.toLocaleString();
+            
+            // Add to UI List (LIFO Queue style)
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <div class="t-info">
+                    <h4>Transfer to</h4>
+                    <p>${document.getElementById("receiverEmail").value}</p>
+                </div>
+                <div class="t-amount negative">- ₹${amt.toLocaleString()}</div>
+            `;
+            transactionList.insertBefore(li, transactionList.firstChild);
 
-            updateBalance();
-            addTransactionToStack(currentAction, currentAmount);
-
-            // Reset UI
+            // Reset
             otpModal.style.display = "none";
-            verifyOtpBtn.innerText = "Verify & Proceed";
-            verifyOtpBtn.style.background = "#10b981";
-
-            if(currentAction === "transfer") {
-                transferMessage.innerHTML = "<i class='fa-solid fa-check-circle'></i> Transfer successful!";
-                transferMessage.style.color = "#10b981";
-                document.getElementById("receiverEmail").value = "";
-                document.getElementById("transferAmount").value = "";
-            }
-
-        }, 1800); // 1.8 seconds delay
+            verifyOtpBtn.innerText = "Verify Transaction";
+            document.getElementById("receiverEmail").value = "";
+            document.getElementById("transferAmount").value = "";
+        }, 1500);
     });
 
-    // --- STACK LOGIC (LIFO) ---
-    function addTransactionToStack(type, amt) {
-        const row = document.createElement("tr");
-        const date = new Date().toLocaleString();
-        let email = (type === "transfer") ? document.getElementById("receiverEmail").value : "Self (Account)";
-
-        let typeHtml = "";
-        if(type === "deposit") typeHtml = "<span style='color:#10b981; font-weight:bold;'>Deposit</span>";
-        if(type === "withdraw") typeHtml = "<span style='color:#ef4444; font-weight:bold;'>Withdraw</span>";
-        if(type === "transfer") typeHtml = "<span style='color:#3b82f6; font-weight:bold;'>Transfer</span>";
-
-        row.innerHTML = `
-            <td>${typeHtml}</td>
-            <td>${email}</td>
-            <td style="font-family:monospace; font-size:16px;">₹${amt.toLocaleString()}</td>
-            <td style="color:#94a3b8; font-size:12px;">${date}</td>
-        `;
-
-        // LIFO: Insert at the top of the table
-        transactionList.insertBefore(row, transactionList.firstChild);
-    }
-
-    // --- LOGOUT ---
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        let confirmLogout = confirm("Are you sure you want to securely logout?");
-        if(confirmLogout) {
-            document.body.innerHTML = "<h1 style='color:#10b981; text-align:center; margin-top:20vh;'>Logged out securely. Session destroyed.</h1>";
-        }
-    });
+    // Initial Dummy Data for List
+    transactionList.innerHTML = `
+        <li><div class="t-info"><h4>Deposit</h4><p>System</p></div><div class="t-amount positive">+ ₹5,000</div></li>
+        <li><div class="t-info"><h4>Transfer</h4><p>alex@bank.com</p></div><div class="t-amount negative">- ₹1,200</div></li>
+    `;
 });
