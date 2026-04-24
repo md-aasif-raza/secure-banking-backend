@@ -1,3 +1,28 @@
+// ADD THIS AT THE VERY TOP OF YOUR app.js FILE
+
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. SECURITY CHECK (Throw out if not logged in)
+    const token = localStorage.getItem("bankToken");
+    if(!token) {
+        window.location.href = "login.html"; // Redirect to login page
+        return;
+    }
+
+    // 2. REAL LOGOUT LOGIC
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            let confirmExit = confirm("Are you sure you want to logout securely?");
+            if(confirmExit) {
+                // Destroy the token
+                localStorage.removeItem("bankToken");
+                // Kick user back to login screen
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+    // ... [KEEP ALL YOUR PREVIOUS CHART AND OTP LOGIC HERE BELOW THIS] ...
 document.addEventListener("DOMContentLoaded", () => {
     console.log("SecureBank Core Initialized.");
 

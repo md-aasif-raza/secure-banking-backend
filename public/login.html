@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank | NetBanking Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-body { background: #0b1437; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .auth-container { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 400px; text-align: center; }
+        .auth-container h2 { color: #1b2559; margin-bottom: 20px; }
+        .auth-icon { font-size: 50px; color: #4318FF; margin-bottom: 10px; }
+        .auth-group { margin-bottom: 20px; text-align: left; }
+        .auth-group label { display: block; font-size: 14px; font-weight: 600; color: #1b2559; margin-bottom: 8px; }
+        .auth-group input { width: 100%; padding: 15px; border: 2px solid #e9edf7; border-radius: 12px; font-size: 14px; outline: none; }
+        .auth-group input:focus { border-color: #4318FF; }
+        .auth-btn { width: 100%; padding: 15px; background: #4318FF; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .auth-btn:hover { background: #11047A; }
+        .toggle-auth { margin-top: 20px; font-size: 14px; color: #a3aed1; cursor: pointer; }
+        .toggle-auth span { color: #4318FF; font-weight: 700; }
+        #registerFields { display: none; }
+        .error-msg { color: #ef4444; font-size: 13px; margin-bottom: 15px; display: none; font-weight: 600; }
+    </style>
+</head>
+<body class="login-body">
+
+    <div class="auth-container">
+        <i class="fa-solid fa-fingerprint auth-icon"></i>
+        <h2 id="authTitle">NetBanking Login</h2>
+        <div id="errorBox" class="error-msg"></div>
+
+        <div id="registerFields">
+            <div class="auth-group">
+                <label>Full Name</label>
+                <input type="text" id="nameInput" placeholder="e.g. Md Aasif Raza">
+            </div>
+        </div>
+
+        <div class="auth-group">
+            <label>Registered Email</label>
+            <input type="email" id="emailInput" placeholder="name@domain.com">
+        </div>
+        
+        <div class="auth-group">
+            <label>Secure Password</label>
+            <input type="password" id="passInput" placeholder="••••••••">
+        </div>
+
+        <button class="auth-btn" id="authBtn">Secure Login</button>
+        
+        <div class="toggle-auth" id="toggleAuth">
+            New to SecureBank? <span>Create Account</span>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
