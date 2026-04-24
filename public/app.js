@@ -1,30 +1,15 @@
-// ADD THIS AT THE VERY TOP OF YOUR app.js FILE
-
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. SECURITY CHECK (Throw out if not logged in)
-    const token = localStorage.getItem("bankToken");
-    if(!token) {
-        window.location.href = "login.html"; // Redirect to login page
-        return;
-    }
-
-    // 2. REAL LOGOUT LOGIC
-    const logoutBtn = document.getElementById("logoutBtn");
-    if(logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            let confirmExit = confirm("Are you sure you want to logout securely?");
-            if(confirmExit) {
-                // Destroy the token
-                localStorage.removeItem("bankToken");
-                // Kick user back to login screen
-                window.location.href = "login.html";
-            }
-        });
-    }
-
-    // ... [KEEP ALL YOUR PREVIOUS CHART AND OTP LOGIC HERE BELOW THIS] ...
 document.addEventListener("DOMContentLoaded", () => {
     console.log("SecureBank Core Initialized.");
+
+    // ==========================================
+    // 0. SECURITY CHECK (Real HDFC Level)
+    // ==========================================
+    const token = localStorage.getItem("bankToken");
+    if(!token) {
+        // Agar token nahi hai, toh sidha login page par fek do
+        window.location.href = "login.html"; 
+        return; // Aage ka code chalne hi mat do
+    }
 
     // ==========================================
     // 1. INITIALIZE 3D CHARTS (Chart.js)
@@ -84,107 +69,107 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelOtpBtn = document.getElementById("cancelOtpBtn");
     const transferMessage = document.getElementById("transferMessage");
     const transactionList = document.getElementById("transactionList");
-    const logoutBtn = document.getElementById("logoutBtn");
     
     let balance = 15000;
 
     // --- Transfer Button Logic ---
-    sendBtn.addEventListener("click", () => {
-        const email = document.getElementById("receiverEmail").value;
-        const amt = parseInt(document.getElementById("transferAmount").value);
-        
-        // Error Handling (Visual Feedback)
-        if(!email) {
-            transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Enter receiver's email!";
-            transferMessage.style.color = "#ef4444";
-            return;
-        }
-        if(!amt || amt <= 0) {
-            transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Enter a valid amount!";
-            transferMessage.style.color = "#ef4444";
-            return;
-        }
-        if(amt > balance) {
-            transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Insufficient Balance!";
-            transferMessage.style.color = "#ef4444";
-            return;
-        }
+    if(sendBtn) {
+        sendBtn.addEventListener("click", () => {
+            const email = document.getElementById("receiverEmail").value;
+            const amt = parseInt(document.getElementById("transferAmount").value);
+            
+            if(!email) {
+                transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Enter receiver's email!";
+                transferMessage.style.color = "#ef4444";
+                return;
+            }
+            if(!amt || amt <= 0) {
+                transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Enter a valid amount!";
+                transferMessage.style.color = "#ef4444";
+                return;
+            }
+            if(amt > balance) {
+                transferMessage.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Insufficient Balance!";
+                transferMessage.style.color = "#ef4444";
+                return;
+            }
 
-        // If all good, show OTP
-        transferMessage.innerHTML = "";
-        otpModal.style.display = "flex";
-        document.getElementById("otpInput").value = "";
-    });
+            transferMessage.innerHTML = "";
+            otpModal.style.display = "flex";
+            document.getElementById("otpInput").value = "";
+        });
+    }
 
     // --- OTP Cancel ---
-    cancelOtpBtn.addEventListener("click", () => {
-        otpModal.style.display = "none";
-    });
+    if(cancelOtpBtn) {
+        cancelOtpBtn.addEventListener("click", () => {
+            otpModal.style.display = "none";
+        });
+    }
 
     // --- OTP Verify & Process (Queue Simulation) ---
-    verifyOtpBtn.addEventListener("click", () => {
-        const otpVal = document.getElementById("otpInput").value;
-        if(otpVal.length < 6) {
-            alert("Security Alert: Enter full 6-digit OTP.");
-            return;
-        }
+    if(verifyOtpBtn) {
+        verifyOtpBtn.addEventListener("click", () => {
+            const otpVal = document.getElementById("otpInput").value;
+            if(otpVal.length < 6) {
+                alert("Security Alert: Enter full 6-digit OTP.");
+                return;
+            }
 
-        const amt = parseInt(document.getElementById("transferAmount").value);
-        const email = document.getElementById("receiverEmail").value;
-        
-        verifyOtpBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing Queue...";
-        verifyOtpBtn.style.background = "#f59e0b"; // Orange processing state
-        
-        // Fake 1.5s delay to show backend processing
-        setTimeout(() => {
-            balance -= amt;
-            document.getElementById("balanceAmount").innerText = "₹" + balance.toLocaleString();
+            const amt = parseInt(document.getElementById("transferAmount").value);
+            const email = document.getElementById("receiverEmail").value;
             
-            // Add to Stack (LIFO - Top of list)
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <div class="t-info">
-                    <h4>Transfer to</h4>
-                    <p>${email}</p>
-                </div>
-                <div class="t-amount negative">- ₹${amt.toLocaleString()}</div>
-            `;
-            transactionList.insertBefore(li, transactionList.firstChild);
-
-            // Reset UI
-            otpModal.style.display = "none";
-            verifyOtpBtn.innerText = "Verify Transaction";
-            verifyOtpBtn.style.background = "#4318FF";
-            document.getElementById("receiverEmail").value = "";
-            document.getElementById("transferAmount").value = "";
+            verifyOtpBtn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing Queue...";
+            verifyOtpBtn.style.background = "#f59e0b"; 
             
-            transferMessage.innerHTML = "<i class='fa-solid fa-circle-check'></i> Secure Transfer Complete!";
-            transferMessage.style.color = "#05cd99";
-        }, 1500);
-    });
+            setTimeout(() => {
+                balance -= amt;
+                document.getElementById("balanceAmount").innerText = "₹" + balance.toLocaleString();
+                
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <div class="t-info">
+                        <h4>Transfer to</h4>
+                        <p>${email}</p>
+                    </div>
+                    <div class="t-amount negative">- ₹${amt.toLocaleString()}</div>
+                `;
+                transactionList.insertBefore(li, transactionList.firstChild);
 
-    // --- Logout Button ---
-    logoutBtn.addEventListener("click", () => {
-        let confirmExit = confirm("Initiate secure system exit?");
-        if(confirmExit) {
-            document.body.innerHTML = `
-                <div style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #0b1437; color: #05cd99;">
-                    <i class="fa-solid fa-shield-check" style="font-size: 60px; margin-bottom: 20px;"></i>
-                    <h1>Session Terminated Successfully</h1>
-                    <p style="color: #a3aed1; margin-top: 10px;">Security tokens destroyed.</p>
-                </div>`;
-        }
-    });
+                otpModal.style.display = "none";
+                verifyOtpBtn.innerText = "Verify Transaction";
+                verifyOtpBtn.style.background = "#4318FF";
+                document.getElementById("receiverEmail").value = "";
+                document.getElementById("transferAmount").value = "";
+                
+                transferMessage.innerHTML = "<i class='fa-solid fa-circle-check'></i> Secure Transfer Complete!";
+                transferMessage.style.color = "#05cd99";
+            }, 1500);
+        });
+    }
+
+    // ==========================================
+    // 3. REAL LOGOUT LOGIC
+    // ==========================================
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            let confirmExit = confirm("Are you sure you want to logout securely?");
+            if(confirmExit) {
+                // Token delete karo aur login page par phek do
+                localStorage.removeItem("bankToken");
+                window.location.href = "login.html";
+            }
+        });
+    }
 
     // --- Sidebar Links Feedback ---
     const navItems = document.querySelectorAll(".nav-links li");
     navItems.forEach(item => {
         item.addEventListener("click", () => {
-            // Remove active class from all, add to clicked
             navItems.forEach(nav => nav.classList.remove("active"));
             item.classList.add("active");
             
-            // Show alert if it's not the Overview tab
             if(item.innerText !== " Overview") {
                 alert(`Routing to ${item.innerText.trim()} module... (Connecting to backend)`);
             }
@@ -192,7 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Initial Stack Data ---
-    transactionList.innerHTML = `
-        <li><div class="t-info"><h4>Initial Deposit</h4><p>Main Branch</p></div><div class="t-amount positive">+ ₹15,000</div></li>
-    `;
+    if(transactionList) {
+        transactionList.innerHTML = `
+            <li><div class="t-info"><h4>Initial Deposit</h4><p>Main Branch</p></div><div class="t-amount positive">+ ₹15,000</div></li>
+        `;
+    }
 });
